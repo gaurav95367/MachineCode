@@ -1,136 +1,135 @@
-// 2:06
-#include <bits/stdc++.h>
+//Design Tic tac toe
+
+// Features
+// 1) Game is played between 2 players player1,player2
+// 2) player1 plays first then each player move 1by1
+// 3) user cannot play invalid move
+// 4) Game halts if 
+// 		1) player1/player2 won => show who won
+// 		2) draw state => show draw
+// 5) Show board after each move [Optional]
+
+#include <bits/stdc++.h>	
 using namespace std;
+class TicTacToe{
+private:
+	vector< vector<int> > grid;
 
-class TictactoeManager{
-    private:
-        int board[3][3];
-        int playerTurn;
-        string winner;
-        
-        
-        void playplayerTurn(){
-            printBoard();
-            int x,y;
-            cout<<"Player "<<playerTurn<<" play, by typing (x,y)"<<endl;
-            cin>>x>>y;
-            board[x][y]=playerTurn;
-            if(checkWon(playerTurn)){
-                winner="PLAYER_"+to_string(playerTurn);
-                endGame();
-            }
-            else{
-                playerTurn = (playerTurn == 1)?2:1;
-                playplayerTurn();
-            }            
-                
-        }
-        bool checkWon(int playerTurn){
-            //check rows
-            for(int i=0;i<3;i++){
-                bool sameRow=true;
-                for(int j=0;j<3;j++)
-                    if(board[i][j] != playerTurn)
-                        sameRow=false;
-                
-                if(sameRow)
-                    return true;
-            }
-            
-            //check colums
-            for(int j=0;j<3;j++){
-                bool sameCol=true;
-                for(int i=0;i<3;i++)
-                    if(board[i][j] != playerTurn)
-                        sameCol=false;
-                
-                if(sameCol)
-                    return true;
-            }
-            
-            //check diag1
-            bool diag1=true;
-            for(int i=0;i<3;i++)
-                if(board[i][i] != playerTurn)
-                    diag1=false;
-            if(diag1)
-                return true;
+	void gameEnd(){
+		cout<<"========= GAME ENDED ========="<<endl;
+	}
+	bool validMark(int x,int y){
+		if(x<0 || x>=3)
+			return false;
+		if(y<0 || y>=3)
+			return false;
+		if(grid[x][y] !=0)
+			return false;
+		return true;
+	}
+	bool gameWon(int player,int x,int y){
+		bool won=true;
+		//check row x
+		for(int j=0;j<3;j++)
+			if(grid[x][j] != player){
+				won=false;
+				break;
+			}
+		if(won)
+			return true;
 
-            //check diag2
-            bool diag2=true;
-            for(int i=2;i>=0;i--)
-                if(board[i][2-i] != playerTurn)
-                    diag2=false;
-            if(diag2)
-                return true;
-            return false;    
-        }
-        
-        void printBoard(){
-            for(int i=0;i<3;i++){
-                for(int j=0;j<3;j++)
-                    cout<<board[i][j]<<" ";
-                cout<<endl;    
-            }
-        }
-    public:
-        TictactoeManager(){
-            for(int i=0;i<3;i++)
-                for(int j=0;j<3;j++)
-                    board[i][j]=0;
-            playerTurn=1;
-            winner="NONE";
-        }
-        void startGame(){
-            playplayerTurn();
-        }
-        
-        void endGame(){
-            cout<<"GAME ENDED : winner = "<<winner<<endl;
-        }
-        
-        
+		//check col y
+		won =true;
+		for(int i=0;i<3;i++)
+			if(grid[i][y] != player){
+				won=false;
+				break;
+			}
+		if(won)
+			return true;
+
+		//check diag1
+		won =true;
+		for(int i=0;i<3;i++)
+			if(grid[i][i] != player){
+				won=false;
+				break;
+			}
+		if(won)
+			return true;
+
+		//check diag2
+		won =true;
+		for(int i=0;i<3;i++)
+			if(grid[i][2-i] != player){
+				won=false;
+				break;
+			}
+		if(won)
+			return true;
+
+		return false;		
+	}
+    bool gameDraw(){
+        for(int i=0;i<3;i++)
+            for(int j=0;j<3;j++)
+                if(grid[i][j] == 0)
+                    return false;
+        return true;            
+    }
+	void playTurn(int player){
+	    displayBoard();
+		cout<<"player"<<player<<" enter x,y"<<endl;
+		int x;
+		int y;
+		cin>>x>>y;
+
+		if(!validMark(x,y)){
+			cout<<"Error : Inavlid Move"<<endl;
+			playTurn(player);
+		}
+		grid[x][y] = player;
+
+		if(gameWon(player,x,y)){
+			cout<<"Game Won : player"<<player<<endl;
+			gameEnd();
+		}
+		else if(gameDraw()){
+			cout<<"Game Draw:"<<endl;
+			gameEnd();
+		}
+		else{
+		    if(player == 1)
+			    playTurn(2);
+			else
+			    playTurn(1);
+
+		}
+}
+	void displayBoard(){
+	    for(int i=0;i<3;i++){
+	        for(int j=0;j<3;j++){
+	            if(grid[i][j] == 0)
+	                cout<<". ";
+	            else
+	                cout<<grid[i][j]<<" ";
+	        }
+	        cout<<endl;
+	    }
+	}
+public:
+	void playNewGame(){
+		grid.resize(3,vector<int> (3,0));
+		playTurn(1);
+	}	
+	
 };
 
-
-
-
 int main(){
-    TictactoeManager    *tm = new TictactoeManager();
-    tm->startGame();
-    
-    return 0;
+	TicTacToe t;
+
+	t.playNewGame();
+
+
+	return 0;
 }
-
-
-
-/* GAMEPLAY
-0 0 0 
-0 0 0 
-0 0 0 
-Player 1 play, by typing (x,y)
-0 0
-1 0 0 
-0 0 0 
-0 0 0 
-Player 2 play, by typing (x,y)
-2 0
-1 0 0 
-0 0 0 
-2 0 0 
-Player 1 play, by typing (x,y)
-1 1
-1 0 0 
-0 1 0 
-2 0 0 
-Player 2 play, by typing (x,y)
-1 2
-1 0 0 
-0 1 2 
-2 0 0 
-Player 1 play, by typing (x,y)
-2 2
-GAME ENDED : winner = PLAYER_1
-
-
-*/
